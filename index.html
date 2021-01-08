@@ -160,6 +160,171 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/OpenZeppelin%E4%B8%8A%E7%9A%84Solidity%E5%BA%93%E5%88%97%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/08/OpenZeppelin%E4%B8%8A%E7%9A%84Solidity%E5%BA%93%E5%88%97%E8%A1%A8/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-08 10:50:53 / 修改时间：10:56:06" itemprop="dateCreated datePublished" datetime="2021-01-08T10:50:53+08:00">2021-01-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a target="_blank" rel="noopener" href="https://openzeppelin.com/">OpenZeppelin</a>提供安全产品来构建、自动化部署、操作去中心化应用，同时也为头部机构的系统和产品提供安全审计服务。<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts">Openzeppelin-contracts</a>是包含安全智能合约开发的库的仓库。Openzeppelin-contracts提供了以下功能：</p>
+<ul>
+<li>ERC20和ERC721标准的实现</li>
+<li>弹性的基于role的权限机制</li>
+<li>提供可复用的Solidity组件，来构建自定义的合约及复杂的去中心化系统</li>
+<li>为系统提供Gas Station Network的最优继承，且无需gas费用</li>
+<li>头部安全公司的审计</li>
+</ul>
+<blockquote>
+<p>A library for secure smart contract development. Build on a solid foundation of community-vetted code.</p>
+<ul>
+<li>Implementations of standards like ERC20 and ERC721.</li>
+<li>Flexible role-based permissioning scheme.</li>
+<li>Reusable Solidity components to build custom contracts and complex decentralized systems.</li>
+<li>First-class integration with the Gas Station Network for systems with no gas fees!</li>
+<li>Audited by leading security firms (last full audit on v2.0.0).</li>
+</ul>
+</blockquote>
+<p>具体功能可参考<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/3.x/">Contract文档</a>。以下所列的合约并不是OpenZeppelin library的一部分。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://forum.openzeppelin.com/t/list-of-solidity-libraries-in-the-wild/2250">list-of-solidity-libraries-in-the-wild</a></p>
+<h2 id="Math"><a href="#Math" class="headerlink" title="Math"></a>Math</h2><h3 id="Integer-整型运算"><a href="#Integer-整型运算" class="headerlink" title="Integer 整型运算"></a>Integer 整型运算</h3><ul>
+<li>math.sol, by DappHub. Mixin for inline numerical wizardry.</li>
+<li>CarefulMath.sol, by Compound.</li>
+<li>Math.sol, by alianse777.</li>
+<li>SafeMathInt256, by Augur 1. Int256 math operations with safety checks that throw on error.</li>
+<li>SafeMathUint256.sol, by Augur 1. Uint256 math operations with safety checks that throw on error.</li>
+</ul>
+<h3 id="Floating-Point-浮点型运算"><a href="#Floating-Point-浮点型运算" class="headerlink" title="Floating Point 浮点型运算"></a>Floating Point 浮点型运算</h3><ul>
+<li>Multiprecision.sol, by alianse777.</li>
+<li>ABDKMathQuad.sol, by ABDK. Smart contract library of mathematical functions operating with IEEE 754 quadruple-precision binary floating-point numbers (quadruple precision numbers). :warning: Weird license.</li>
+</ul>
+<h3 id="Fixed-Point-定点小数运算"><a href="#Fixed-Point-定点小数运算" class="headerlink" title="Fixed Point 定点小数运算"></a>Fixed Point 定点小数运算</h3><ul>
+<li>FixidityLib.sol, by CementDAO. This library provides fixed point arithmetic with protection against overflow.</li>
+<li>SafeDecimalMath.sol, by Synthetix. Safely manipulate unsigned fixed-point decimals at a given precision level.</li>
+<li>Exponential.sol, by Compound. Exponential module for storing fixed-precision decimals.</li>
+<li>ABDKMath64x64, by ABDK. Smart contract library of mathematical functions operating with signed 64.64-bit fixed point numbers. :warning: Weird license.</li>
+<li>FixedPoint.sol, by UMA . Library for fixed point arithmetic on uints with 18 digit precision.</li>
+<li>RealMath.sol, by Macroverse.</li>
+<li>BNum.sol, by Balancer. Library for fixed point arithmetic with 18 digit precision.</li>
+</ul>
+<h3 id="Fractions-有理数"><a href="#Fractions-有理数" class="headerlink" title="Fractions 有理数"></a>Fractions 有理数</h3><ul>
+<li>FractionUtil.sol, by Celo.</li>
+</ul>
+<h2 id="Random-随机"><a href="#Random-随机" class="headerlink" title="Random 随机"></a>Random 随机</h2><ul>
+<li>UniformRandomNumber.sol, by PoolTogether. A library that eliminates modulo bias when bounding random numbers to a smaller range.</li>
+<li>Random.sol, by alianse777. “random” numbers generator (not cryptographicaly secure).</li>
+</ul>
+<h2 id="Bytes-字节数组"><a href="#Bytes-字节数组" class="headerlink" title="Bytes 字节数组"></a>Bytes 字节数组</h2><ul>
+<li>BytesLib.sol, by Gonçalo Sá . Bytes tightly packed arrays utility library for ethereum contracts written in Solidity.</li>
+<li>LibBytes.sol, by Augur .</li>
+</ul>
+<h2 id="Arrays-数组"><a href="#Arrays-数组" class="headerlink" title="Arrays 数组"></a>Arrays 数组</h2><ul>
+<li>Array.sol, by alianse777.</li>
+</ul>
+<h2 id="Type-conversion-类型转换"><a href="#Type-conversion-类型转换" class="headerlink" title="Type conversion 类型转换"></a>Type conversion 类型转换</h2><ul>
+<li>UintToString.sol, by Augur. Uint operations to convert to string.</li>
+<li>BytesToString.sol, by Augur. Bytes operations to convert to string and remove null characters.</li>
+<li>Convert.sol, by alianse777.</li>
+</ul>
+<h2 id="Memory-内存"><a href="#Memory-内存" class="headerlink" title="Memory 内存"></a>Memory 内存</h2><ul>
+<li>Memory.sol, by alianse777.</li>
+</ul>
+<h2 id="Proxy-代理"><a href="#Proxy-代理" class="headerlink" title="Proxy 代理"></a>Proxy 代理</h2><ul>
+<li>MinimalProxy.sol, by Ripio.</li>
+<li>ProxyFactory.sol, by GNOSIS.</li>
+</ul>
+<h2 id="Wallet-钱包"><a href="#Wallet-钱包" class="headerlink" title="Wallet 钱包"></a>Wallet 钱包</h2><h3 id="MultiSig-多签"><a href="#MultiSig-多签" class="headerlink" title="MultiSig 多签"></a>MultiSig 多签</h3><ul>
+<li>MultiSigWallet.sol, by GNOSIS. Allows multiple parties to agree on transactions before execution.</li>
+<li>MultiSigWalletWithTimeLock.sol, by 0x. Multisignature wallet with time lock- Allows multiple parties to execute a transaction after a time lock has passed.</li>
+</ul>
+<h2 id="Data-Structures-数据结构"><a href="#Data-Structures-数据结构" class="headerlink" title="Data Structures 数据结构"></a>Data Structures 数据结构</h2><ul>
+<li>LibCLL.sol, by o0ragman0o. A Solidity library for implementing a data indexing regime using a circular linked list.</li>
+<li>StructuredLinkedList.sol, by Vittorio Minacori.</li>
+<li>LinkedList.sol, by TechHQ.</li>
+<li>DoubleLinkedList.sol, by TechHQ.</li>
+<li>StateMachine.sol, by TechHQ.</li>
+<li>SortitionSumTreeFactory, by Kleros. Allows values to be proportionally weighted with O(log(n)) efficiency. The linked package is actually the Kleros -codebase; ideally it should be extracted into its own library.</li>
+<li>Heap.sol, by Celo. Simple heap implementation.</li>
+<li>LinkedHashMap.sol, by AKA protocol.</li>
+<li>HitchensOrderStatisticsTree.sol, by Rob Hitchens. A Solidity Red-Black Tree library to store and maintain a sorted data structure in a Red-Black binary search tree, with O(log 2n) insert, remove and search time (and gas, approximately).</li>
+</ul>
+<h2 id="Strings-字符串"><a href="#Strings-字符串" class="headerlink" title="Strings 字符串"></a>Strings 字符串</h2><ul>
+<li>strings.sol, by Arachnid. String &amp; slice utility library for Solidity contracts.</li>
+</ul>
+<h2 id="Dates-日期"><a href="#Dates-日期" class="headerlink" title="Dates 日期"></a>Dates 日期</h2><ul>
+<li>BokkyPooBahsDateTimeLibrary.sol, by bokkypoobah. A gas-efficient Solidity date and time library.</li>
+</ul>
+<h2 id="Serialization-序列号"><a href="#Serialization-序列号" class="headerlink" title="Serialization 序列号"></a>Serialization 序列号</h2><ul>
+<li>Base64.sol, by OpenZeppelin.</li>
+<li>JsmnSolLib.sol, by chrisdotn.</li>
+</ul>
+<h2 id="Encoding-编码"><a href="#Encoding-编码" class="headerlink" title="Encoding 编码"></a>Encoding 编码</h2><ul>
+<li>RLPEncode.sol, by OMG Network.</li>
+</ul>
+<h2 id="Cryptography-加解密"><a href="#Cryptography-加解密" class="headerlink" title="Cryptography 加解密"></a>Cryptography 加解密</h2><ul>
+<li>TypedSignature.sol, by dYdX. Library to unparse typed signatures.</li>
+<li>SolRsaVerify.sol, by adria0. Verification of RSA Sha256 Pkcs1.5 Signatures.</li>
+</ul>
+<h2 id="Tokens-代币"><a href="#Tokens-代币" class="headerlink" title="Tokens 代币"></a>Tokens 代币</h2><ul>
+<li>ERC20DividendableEth.sol, by TechHQ.</li>
+</ul>
+<h2 id="Voting-投票"><a href="#Voting-投票" class="headerlink" title="Voting 投票"></a>Voting 投票</h2><ul>
+<li>Voting.sol, by TechHQ.</li>
+</ul>
+<h2 id="时间锁"><a href="#时间锁" class="headerlink" title="时间锁"></a>时间锁</h2><ul>
+<li>Timelock.sol, by Compound.</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/07/%E4%BD%BF%E7%94%A8Fisco%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91Solidity%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -483,7 +648,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
