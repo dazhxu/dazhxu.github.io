@@ -160,6 +160,159 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/18/Hyperledger-Fabric%E5%BF%AB%E7%85%A7%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/18/Hyperledger-Fabric%E5%BF%AB%E7%85%A7%E4%BB%8B%E7%BB%8D/" class="post-title-link" itemprop="url">Hyperledger Fabric快照介绍</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-18 08:52:22 / 修改时间：08:53:51" itemprop="dateCreated datePublished" datetime="2021-01-18T08:52:22+08:00">2021-01-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hyperledger/" itemprop="url" rel="index"><span itemprop="name">Hyperledger</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>对于Fabric来说，如果一个Peer想要处理交易，那么它至少需要拥有背书和验证交易的最小集的账本数据。而这些数据包含“world state”（世界状态or全局状态），即最近一个区块提交后账本中所有Key-value集合。目前Fabric有两种方式供一个新加入的peer同步状态数据：</p>
+<ol>
+<li>从区块构建全局状态。从创世区块（genesis block）开始，依次从排序服务节点拉取区块，并在本地对区块进行处理，一直到最新的区块。</li>
+<li>从快照（Snapshot）构建全局状态。快照包含了到特定区块为止最小集的账本数据，因此加入通道无需拉取和处理全部的区块。</li>
+</ol>
+<p>在v2.3.0之前，Fabric只支持从区块构建全局状态，在2020年11月发布的Fabric v2.3.0加入了对快照的支持。第一种方法来说，如果通道的规模较大（例如通道已经包含了数千个区块），那么从创世区块开始处理所有已经提交的区块则是一个非常耗时的过程。另外存储从创世区块开始的所有区块对存储也是一种压力。与第一种方法相比，通过快照加入通道仅需提供最新的配置区块(configuration block)。如果在创世区块之后，通道的配置发生过改变，则通过快照加入通道是一个很有优势的方法。</p>
+<h2 id="使用快照的一些考量"><a href="#使用快照的一些考量" class="headerlink" title="使用快照的一些考量"></a>使用快照的一些考量</h2><ul>
+<li>当一个peer加入通道时，是选择通过区块同步加入还是通过快照加入，需要考量从创世区块开始通道中区块的数量，从而影响加入通道的时间；需要考量peer是否能够基于创世区块原始的配置而从排序服务拉取区块；需要考虑是否需要查询通道的历史（历史区块、历史交易和历史状态）；</li>
+<li>如果你的背书请求或者查询不需要最新区块提交，那么就可以使用生成快照的peer；</li>
+<li>如果你的背书请求或着查询需要最新区块提交，那么可以利用discovery服务来识别和定位通道中拥有最高区块的peer，从而避免正在生成快照的其他peer。另外，你也可以设置专门的生成快照的节点，且不可用于背书和查询功能，例如不设置peer的<em>peer.gossip.external</em>从而让peer不参与discovery服务；</li>
+</ul>
+<h2 id="使用快照的限制"><a href="#使用快照的限制" class="headerlink" title="使用快照的限制"></a>使用快照的限制</h2><ul>
+<li>使用快照加入通道的节点无法查询低于生成快照高度的区块；同理，也不能查询状态数据早于快照的历史。例如peer加入通道使用的快照是在第1000块上生成的，那么此peer则不能查询0-999号区块以及相关的状态历史。因此，建议每个机构至少有一个节点能够包含所有的历史数据，以用于查询历史。</li>
+<li>正在生成快照的peer无法提交区块。因为生成快照是一个资源消耗大的操作，因此可能会影响背书及查询的效率。基于这个原因，尽量在必要时才进行生成快照的操作，如当有新节点要加入通道的时候。</li>
+<li>由于通道中的各个机构的私有数据可能不同，因此快照并不会包含私有数据本身（可能包含私有数据的哈希）。当peer通过快照加入通道后，它会直接从同为私有数据成员的节点处发现和获取私有数据集合，然后进行私有数据校验</li>
+<li>生成快照不会对peer的账本进行归档和删除，并且快照不能当成peer全量备份的方法，因为私有数据和配置信息不会包含在快照里。</li>
+<li>对于通过快照加入通道的节点，无法使用<em>reset</em>, <em>roolback</em>, <em>rebuild-dbs</em>命令，因为节点不包含所有的区块文件。</li>
+</ul>
+<h2 id="使用快照"><a href="#使用快照" class="headerlink" title="使用快照"></a>使用快照</h2><p>使用快照功能可以分为两个部分，一是生成快照，二是通过快照加入通道。</p>
+<h3 id="生成快照"><a href="#生成快照" class="headerlink" title="生成快照"></a>生成快照</h3><p>生成快照的过程可分为三个步骤：</p>
+<ol>
+<li>预定（schedule）快照生成。由于某个高度快照的生成要求peer必须恰好在此高度，所以快照的高度必须等于或大于账本当前的高度。另外使用快照加入通道的peer也可以用来生成快照。快照可以按需进行生成或者按照一定的规律去生成，比如每1000个区块生成一次快照。当使用快照加入通道时，建议使用离最新的通道配置区块较近的快照，因为这样可以确保peer使用包括最新排序服务endpoints及CA证书的通道配置。</li>
+<li>当账本高度到达预设快照生成高度，快照就会被peer生成。生成的快照是一个目录，包含了公开状态、私有状态的哈希、交易ID、collection配置历史等文件。另外，还包括一个包含以上文件的元信息的文件。</li>
+<li>如果快照被新的机构使用，需要把快照发送给此机构。这个过程是在线下进行的，因为快照文件是非压缩的，peer管理员可能需要在发送快照前进行压缩。在一般的场景中，可以从一个机构获取快照，但从另一个机构获取快照元信息文件来校验快照。</li>
+</ol>
+<h3 id="使用快照加入通道"><a href="#使用快照加入通道" class="headerlink" title="使用快照加入通道"></a>使用快照加入通道</h3><p>使用快照加入通道也分为三个步骤：</p>
+<ol>
+<li>校验快照。当peer管理员使用快照加入通道前，需计算快照的哈希，然后与元信息文件上的哈希进行比对。另外，基于不同的信任模型，peer管理员可能需要从不同的机构获取元信息文件。不仅如此，peer管理员可能会要求提供快照的机构进行签名。</li>
+<li>使用快照加入通道。当peer使用快照加入通道后，就开始拉取它属于的私有数据集。而且也开始像正常peer一样提交区块。</li>
+<li>校验peer加入通道成功。可以通过获取通道信息来校验是否加入通道成功。</li>
+</ol>
+<h2 id="快照文件内容"><a href="#快照文件内容" class="headerlink" title="快照文件内容"></a>快照文件内容</h2><p>快照文件生成在 <em>{ledger.snapshots.rootDir}/completed/{channelName}/{lastBlockNumberInSnapshot}</em> 目录，而 <em>ledger.snapshots.rootDir</em> 可以通过peer的yaml配置文件映射到自定义的目录。</p>
+<p>快照目录包含了如下内容：</p>
+<ul>
+<li>Public state：通道中所有最新的key-value值。</li>
+<li>Private data hashes：通道私有数据交易的哈希。</li>
+<li>Transactions IDs：通道使用的所有交易的ID。</li>
+<li>Collection config history：对于所有chaincode的collection配置的历史。</li>
+</ul>
+<p>另外，开展还包含了两个元信息文件，以对快照数据进行校验。对于某个高度，快照的元信息文件都是相同的。</p>
+<p>一个文件是名为 <em>_snapshot_signable_metadata.json</em> 的元信息文件，包含以下内容：</p>
+<ul>
+<li>channel_name：通道的名字</li>
+<li>last_block_number：生成快照的区块高度</li>
+<li>last_block_hash：生成快照的区块哈希</li>
+<li>previous_block_hash：生成快照的区块的前一个区块</li>
+<li>state_db_type：状态数据库的类型，CouchDB或者LevelDB</li>
+<li>snapshot_files_raw_hash：是一个json记录，包含了上面所述的快照文件的哈希。</li>
+</ul>
+<p>另一个文件也是json记录，包含两个数据域：</p>
+<ul>
+<li>snapshot_hash: <em>_snapshot_signable_metadata.json</em> 文件的哈希，这个哈希也被当成是快照的哈希</li>
+<li>lash_block_commit_hash： 记录了生成快照的peer是否有能力计算区块提交的哈希。</li>
+</ul>
+<h2 id="具体操作"><a href="#具体操作" class="headerlink" title="具体操作"></a>具体操作</h2><p>快照涉及的操作也包括两个部分，一是生成快照，二是使用快照加入通道。</p>
+<h3 id="生成快照-1"><a href="#生成快照-1" class="headerlink" title="生成快照"></a>生成快照</h3><ul>
+<li><em>peer channel getinfo</em> 获取当前账本高度</li>
+</ul>
+<p>在生成快照前，最好先确认当前账本的高度：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer channel getinfo -c &lt;name of channel&gt;</span><br></pre></td></tr></table></figure>
+<p>命令执行成功可以看到类似于下面的内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Blockchain info: &#123;&quot;height&quot;:970,&quot;currentBlockHash&quot;:&quot;JgK9lcaPUNmFb5Mp1qe1SVMsx3o/22Ct4+n5tejcXCw=&quot;,&quot;previousBlockHash&quot;:&quot;f8lZXoAn3gF86zrFq7L1DzW2aKuabH9Ow6SIE5Y04a4=&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>在例子中，当前账本的高度是970，那么你可以生成等于或高于970的快照。</p>
+<ul>
+<li><em>peer snapshot submitrequest</em> 提交快照生成</li>
+</ul>
+<p>生成快照的命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer snapshot submitrequest -c &lt;name of channel&gt; -b &lt;ledger height where snapshot will be taken&gt; --peerAddress &lt;address of peer&gt; --tlsRootCertFile &lt;path to root certificate of the TLS CA&gt;</span><br></pre></td></tr></table></figure>
+<p>例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer snapshot submitrequest -c testchannel -b 1000 --peerAddress 127.0.0.1:22509 --tlsRootCertFile tls/cert.pem</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果将 <em><ledger height where snapshot will be taken></em> 设置为0，那么快照就会立即生成。这个功能可以在组织内部生成快照且不会发送给其他组织时使用，因为如果跨机构使用会证件不同快照高度的相似性。</p>
+</blockquote>
+<ul>
+<li><em>peer snapshot listpending</em> 查看快照生成请求</li>
+</ul>
+<p>示例命令如下： </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer snapshot listpending -c testchannel --peerAddress 127.0.0.1:22509 --tlsRootCertFile tls/cert.pem</span><br></pre></td></tr></table></figure>
+<p>如果执行成功，会显示如下信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Successfully got pending snapshot requests [1000]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>peer snapshot cancelrequest</em> 删除快照生成请求</li>
+</ul>
+<p>示例命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer snapshot cancelrequest -c testchannel -b 1000 --peerAddress 127.0.0.1:22509 --tlsRootCertFile tls/cert.pem</span><br></pre></td></tr></table></figure>
+<h3 id="使用快照加入通道-1"><a href="#使用快照加入通道-1" class="headerlink" title="使用快照加入通道"></a>使用快照加入通道</h3><p>使用快照加入通道的命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">peer channel joinbysnapshot --snapshotpath &lt;path to snapshot&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/08/OpenZeppelin%E4%B8%8A%E7%9A%84Solidity%E5%BA%93%E5%88%97%E8%A1%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -657,20 +810,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
