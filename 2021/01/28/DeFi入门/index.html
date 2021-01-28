@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本文 将对DeFi的概念、优势、应用场景、面临的挑战等方面进行介绍，并对DeFi和开放银行进行了对比。 什么是DeFiDeFi是去中心化金融(DeCentralized Finance)的缩写，指在区块链网络上构建的金融应用生态。更具体的来说，DeFi旨在建立开源、公开、透明的去中心化金融应用生态，没有中心化机构运作且可以对所有人提供服务。用户能完全控制自己的资产，使用Dapp通过P2P网络与De">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeFi入门">
+<meta property="og:url" content="http://example.com/2021/01/28/DeFi%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="Dazhxu&#39;s Blog">
+<meta property="og:description" content="本文 将对DeFi的概念、优势、应用场景、面临的挑战等方面进行介绍，并对DeFi和开放银行进行了对比。 什么是DeFiDeFi是去中心化金融(DeCentralized Finance)的缩写，指在区块链网络上构建的金融应用生态。更具体的来说，DeFi旨在建立开源、公开、透明的去中心化金融应用生态，没有中心化机构运作且可以对所有人提供服务。用户能完全控制自己的资产，使用Dapp通过P2P网络与De">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-28T02:02:39.000Z">
+<meta property="article:modified_time" content="2021-01-28T07:36:07.051Z">
+<meta property="article:author" content="Dazhxu">
+<meta property="article:tag" content="Ethereum">
+<meta property="article:tag" content="DeFi">
+<meta property="article:tag" content="公链">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/01/28/DeFi%E5%85%A5%E9%97%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>DeFi入门 | Dazhxu's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dazhxu's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/28/DeFi%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          DeFi入门
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-28 10:02:39 / 修改时间：15:36:07" itemprop="dateCreated datePublished" datetime="2021-01-28T10:02:39+08:00">2021-01-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%AC%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">公链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a target="_blank" rel="noopener" href="https://academy.binance.com/en/articles/the-complete-beginners-guide-to-decentralized-finance-defi">本文</a> 将对DeFi的概念、优势、应用场景、面临的挑战等方面进行介绍，并对DeFi和开放银行进行了对比。</p>
+<h2 id="什么是DeFi"><a href="#什么是DeFi" class="headerlink" title="什么是DeFi"></a>什么是DeFi</h2><p>DeFi是去中心化金融(DeCentralized Finance)的缩写，指在区块链网络上构建的金融应用生态。更具体的来说，DeFi旨在建立开源、公开、透明的去中心化金融应用生态，没有中心化机构运作且可以对所有人提供服务。用户能完全控制自己的资产，使用Dapp通过P2P网络与DeFi应用进行交互。</p>
+<p>DeFi的核心优势是用户可以很容易获取金融服务，尤其是那些脱离与现代金融系统之外的用户。DeFi另一个潜在的优势是其模块化框架，通过DeFi应用的交互可能会创建完全新型的金融市场、产品和服务。</p>
+<h2 id="DeFi的主要优势"><a href="#DeFi的主要优势" class="headerlink" title="DeFi的主要优势"></a>DeFi的主要优势</h2><h3 id="不依赖机构"><a href="#不依赖机构" class="headerlink" title="不依赖机构"></a>不依赖机构</h3><p>传统金融依赖中心化机构，如银行作为中介机构、法院作为仲裁机构等。而DeFi应用则无需依赖任何中介机构或仲裁机构，而是通过代码来解决任何可能的争议，资产则完全由用户掌控。这将会降低金融成本，并能建立一套更顺畅的金融系统。</p>
+<h3 id="避免单点故障"><a href="#避免单点故障" class="headerlink" title="避免单点故障"></a>避免单点故障</h3><p>由于DeFi建立在区块链之上，这将会消除单点故障。数据记录在区块链上并传播到成千上万个节点，那么服务的审查和潜在的崩溃则 变得十分困难。另外，由于DeFi应用框架都是预先建立的，那么构建一个DeFi应用会更容易更安全。</p>
+<h3 id="更容易提供服务"><a href="#更容易提供服务" class="headerlink" title="更容易提供服务"></a>更容易提供服务</h3><p>DeFi可以更容易为那些无法获取传统金融服务的人提供金融服务。由于传统金融依赖于追求利润的中介结构，低收入国家和地区的人则很难获取金融服务。而DeFi大幅降低了成本，低收入人群也可以从丰富的金融服务中受益。</p>
+<h2 id="DeFi的潜在应用场景"><a href="#DeFi的潜在应用场景" class="headerlink" title="DeFi的潜在应用场景"></a>DeFi的潜在应用场景</h2><h3 id="借贷-Borrowing-amp-Lending"><a href="#借贷-Borrowing-amp-Lending" class="headerlink" title="借贷 Borrowing &amp; Lending"></a>借贷 Borrowing &amp; Lending</h3><p>公开的贷款协议是DeFi系统中最流行的应用之一。与传统借贷相比，DeFi借贷有很多优势，包括实时结算、数字资产抵押、无需信用审查、以及未来的标准化。</p>
+<p>由于借贷服务是在区块链上构建的，因此可以通过密码学验证来降低信任成本。区块链上的借贷市场可以降低对手方的风险，使借贷服务更便宜、快速，并能服务与更多人。</p>
+<h3 id="银行货币服务-Monetary-banking-services"><a href="#银行货币服务-Monetary-banking-services" class="headerlink" title="银行货币服务 Monetary banking services"></a>银行货币服务 Monetary banking services</h3><p>从定义上来说，DeFi是金融应用，那么铸币服务也是一个比较明显的应用场景，包括稳定币的发行、抵押贷款和保险。</p>
+<p>随着区块链技术的成熟，稳定币的出现获得了越来越多的关注。稳定币是一种锚定了真实世界资产的加密货币，但能够以数字的形式实现更容易的转移。由于加密货币价格是随时波动的，去中心化的稳定币则可以作为电子现金用于日常支付，而且这种电子现金并不由中心机构发行和监控。</p>
+<p>由于抵押贷款需要多个中介机构参与，因此其流程比较昂贵和耗时。而DeFi使用了智能合约，则承销和合法费用则被大幅度降低。</p>
+<p>链上保险可以去掉中介结构并在众多参与者之间分散风险，从而在保证服务质量的情况下有效降低保费。</p>
+<h3 id="去中心化市场-Decentralized-Marketplaces"><a href="#去中心化市场-Decentralized-Marketplaces" class="headerlink" title="去中心化市场 Decentralized Marketplaces"></a>去中心化市场 Decentralized Marketplaces</h3><p>评估去中心化市场的潜力是具有挑战性的，它是能为金融服务带来巨大的创新空间。</p>
+<p>颇有争议的是，DeFi最重要的应用是去中心化交易所(Decentralized Exchanges, DEXes)。这些平台可以使用户交易数字资产，而不需要中心化交易所托管他们的资产。用户可以在智能合约的帮助下直接通过钱包进行交易。</p>
+<p>因为去中心化交易几乎不需要维护，因此与中心化交易所相比手续费更低，并且能去掉保管风险和单点故障。例如，代币安全发行平台可以为发行者提供工具和资源使用自定义的参数保证代币化安全。</p>
+<p>另外一些项目可以提供衍生品、组合资产、去中心化市场指数等金融服务。</p>
+<h2 id="智能合约在DeFi中的作用"><a href="#智能合约在DeFi中的作用" class="headerlink" title="智能合约在DeFi中的作用"></a>智能合约在DeFi中的作用</h2><p>大部分DeFi应用都设计智能合约的创建和执行。与法律合约使用法律条文约束合约实体间的关系，智能合约则使用计算机代码。由于智能合约通过代码实现规则，那么它可以使用代码保证规则的执行，以运行目前需要人工干预的大量商业逻辑的可信和自动化执行。</p>
+<p>使用智能合约具备更快速、更方便、降低风险的特点。但另一方面，智能合约也引入了另一种风险，即智能合约可能出现bug，使锁定在合约中的资产遭受风险。</p>
+<h2 id="DeFi面临的挑战"><a href="#DeFi面临的挑战" class="headerlink" title="DeFi面临的挑战"></a>DeFi面临的挑战</h2><p>DeFi面临以下几个挑战：</p>
+<ul>
+<li><strong>性能较差</strong>：与中心化系统相比，区块链和区块链应用的性能较低，因此需要DeFi的开发者对账户进行限制并对他们的产品进行优化。</li>
+<li><strong>用户错误的风险</strong>：由于DeFi将中介的职责转移给了用户，用户的错误则会造成高风险。由于DeFi产品部署在不可篡改的区块链上，设计最小化用户错误风险的产品则是十分具有挑战性的。</li>
+<li><strong>用户体验差</strong>：目前，使用DeFi应用需要用户侧进行额外的工作量。因此DeFi应用必须向用户体现明显的优势，从而激励用户从传统金融切换到DeFi。</li>
+<li><strong>生态较混乱</strong>：针对应用场景选择合适的DeFi产品是很困难的，因此用户需要具备寻找最佳选择的能力。因此，目前面临的挑战不仅是建立DeFi应用，在广阔的生态中提供合适的产品也是十分重要的。</li>
+</ul>
+<h2 id="DeFi和开放银行的区别"><a href="#DeFi和开放银行的区别" class="headerlink" title="DeFi和开放银行的区别"></a>DeFi和开放银行的区别</h2><p>开放银行是通过API向第三方金融机构提供金融数据的安全访问的银行系统。开放银行需要银行和非银行机构交互，从本质上来说，开放银行是传统金融体系中的一种新的形式。</p>
+<p>而DeFi是与现在的金融系统独立的全新的金融系统，DeFi有时候也被称为开放金融。例如，开放银行可以在一个应用上通过从多个银行和机构获取数据来管理所有传统的金融设施。而DeFi可以管理新的金融设施以及用全新的方式与其进行交互。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>DeFi致力于构建一个与传统金融独立的金融体系，以提供更开放的金融服务，来解决传统金融审查过严和歧视服务的问题。但去中心化不是万能的，寻找与区块链的特点匹配的应用场景是构建有效的金融产品的关键。如果DeFi是成功的，它将会把更多权利从中心化机构让渡给开源社区和金融用户。一旦DeFi被大众所接受，更有效率的金融系统也就好建立。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+              <a href="/tags/DeFi/" rel="tag"># DeFi</a>
+              <a href="/tags/%E5%85%AC%E9%93%BE/" rel="tag"># 公链</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/18/Hyperledger-Fabric%E5%BF%AB%E7%85%A7%E4%BB%8B%E7%BB%8D/" rel="prev" title="Hyperledger Fabric快照介绍">
+      <i class="fa fa-chevron-left"></i> Hyperledger Fabric快照介绍
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFDeFi"><span class="nav-number">1.</span> <span class="nav-text">什么是DeFi</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DeFi%E7%9A%84%E4%B8%BB%E8%A6%81%E4%BC%98%E5%8A%BF"><span class="nav-number">2.</span> <span class="nav-text">DeFi的主要优势</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E4%BE%9D%E8%B5%96%E6%9C%BA%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">不依赖机构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E5%8D%95%E7%82%B9%E6%95%85%E9%9A%9C"><span class="nav-number">2.2.</span> <span class="nav-text">避免单点故障</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E5%AE%B9%E6%98%93%E6%8F%90%E4%BE%9B%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.3.</span> <span class="nav-text">更容易提供服务</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DeFi%E7%9A%84%E6%BD%9C%E5%9C%A8%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.</span> <span class="nav-text">DeFi的潜在应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%80%9F%E8%B4%B7-Borrowing-amp-Lending"><span class="nav-number">3.1.</span> <span class="nav-text">借贷 Borrowing &amp; Lending</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%B6%E8%A1%8C%E8%B4%A7%E5%B8%81%E6%9C%8D%E5%8A%A1-Monetary-banking-services"><span class="nav-number">3.2.</span> <span class="nav-text">银行货币服务 Monetary banking services</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E5%B8%82%E5%9C%BA-Decentralized-Marketplaces"><span class="nav-number">3.3.</span> <span class="nav-text">去中心化市场 Decentralized Marketplaces</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%9C%A8DeFi%E4%B8%AD%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">4.</span> <span class="nav-text">智能合约在DeFi中的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DeFi%E9%9D%A2%E4%B8%B4%E7%9A%84%E6%8C%91%E6%88%98"><span class="nav-number">5.</span> <span class="nav-text">DeFi面临的挑战</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DeFi%E5%92%8C%E5%BC%80%E6%94%BE%E9%93%B6%E8%A1%8C%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">6.</span> <span class="nav-text">DeFi和开放银行的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Dazhxu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dazhxu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dazhxu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Dazhxu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
