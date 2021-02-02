@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="2006年Google发表了BigTable论文，推动了LSM存储架构的流行。LSM(Log Structured Merge-Tree)是一种数据组织形式，大多数的NoSQL都是基于LSM架构实现的。由于区块链系统基本上使用像Level DB之类的NoSQL数据库，因此，本文将对LSM的概念、原理和操作进行介绍。 背景传统关系型数据库采用B树或者B+树作为数据存储结构，从而进行高效查找。但这种存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LSM介绍">
+<meta property="og:url" content="http://example.com/2021/02/01/LSM%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="Dazhxu&#39;s Blog">
+<meta property="og:description" content="2006年Google发表了BigTable论文，推动了LSM存储架构的流行。LSM(Log Structured Merge-Tree)是一种数据组织形式，大多数的NoSQL都是基于LSM架构实现的。由于区块链系统基本上使用像Level DB之类的NoSQL数据库，因此，本文将对LSM的概念、原理和操作进行介绍。 背景传统关系型数据库采用B树或者B+树作为数据存储结构，从而进行高效查找。但这种存">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/LSM01.png">
+<meta property="og:image" content="http://example.com/images/compaction.jpg">
+<meta property="og:image" content="http://example.com/images/bloomfilter.png">
+<meta property="article:published_time" content="2021-02-01T08:55:15.000Z">
+<meta property="article:modified_time" content="2021-02-02T06:36:03.692Z">
+<meta property="article:author" content="Dazhxu">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/LSM01.png">
+
+<link rel="canonical" href="http://example.com/2021/02/01/LSM%E4%BB%8B%E7%BB%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>LSM介绍 | Dazhxu's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Dazhxu's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/01/LSM%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LSM介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-01 16:55:15" itemprop="dateCreated datePublished" datetime="2021-02-01T16:55:15+08:00">2021-02-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-02 14:36:03" itemprop="dateModified" datetime="2021-02-02T14:36:03+08:00">2021-02-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>2006年Google发表了<a target="_blank" rel="noopener" href="https://static.googleusercontent.com/media/research.google.com/zh-CN//archive/bigtable-osdi06.pdf">BigTable</a>论文，推动了LSM存储架构的流行。LSM(Log Structured Merge-Tree)是一种数据组织形式，大多数的NoSQL都是基于LSM架构实现的。由于区块链系统基本上使用像Level DB之类的NoSQL数据库，因此，本文将对LSM的概念、原理和操作进行介绍。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>传统关系型数据库采用B树或者B+树作为数据存储结构，从而进行高效查找。但这种存储模式保存着磁盘时会有一个明显的缺陷，即逻辑上很近的块在物理磁盘可能很远，这就会产生大量的随机读写。对磁盘来说，随机读写比顺序读写速度慢的多，为了提高性能，需要将对磁盘的随机操作转换为顺序操作。而LSM的产生就是为了这个目的，将随机写转化为顺序写，从而大幅提高写性能，但也牺牲了一些读性能。</p>
+<h2 id="LSM原理"><a href="#LSM原理" class="headerlink" title="LSM原理"></a>LSM原理</h2><p>LSM的实现原理大致如下：</p>
+<ol>
+<li>当有写操作时，写入位于内存的buffer，内存中通过某种数据结构(如红黑树、map、skiplist)保持key有序；一般实现也会将数据追加写到磁盘Log文件，以备必要时恢复。</li>
+<li>内存中的数据定时或按固定大小地刷到磁盘文件（sstable）。更新操作只不断地写到内存，并不更新磁盘上已有的文件。</li>
+<li>随着数据越写越多，磁盘文件也越写越多，这些文件变的不可写且有序。</li>
+<li>定时对文件进行compaction操作，消除冗余数据，减少文件数量。</li>
+</ol>
+<p><img src="/images/LSM01.png" alt="LSM原理图"></p>
+<p>从上面的实现原理可以看出，LSM的写操作只更新内存，而内存中的数据以数据块的形式刷到磁盘，这个过程是顺序磁盘IO操作；另外，磁盘文件也会定期进行compaction操作，这个过程也涉及磁盘IO操作。</p>
+<p>LSM的读操作先从内存进行访问，如果内存访问不到，再逆序从磁盘文件中进行查找。由于磁盘文件本身是有序的，且定期的compaction操作减少了文件数量，因此查找过程相对较快。</p>
+<h2 id="LSM-Compaction"><a href="#LSM-Compaction" class="headerlink" title="LSM Compaction"></a>LSM Compaction</h2><p>Compaction是LSM实现中重要的一步。写数据时由于较旧的文件并不会被更新，重复的记录只会通过创建新的记录来覆盖，因此会产生很多冗余数据，而Compaction操作就是用来消除这些冗余数据，同时也能减少文件数量。</p>
+<p><strong>按文件大小的Compaction</strong>：当一定数量的sstable文件被创建，例如有5个sstable，每一个有10行，他们被合并为一个50行的文件（或者更少的行数）。这个过程一 直持续着，当更多的有10行的sstable文件被创建，当产生5个文件时，它们就被合并到50行的文件。最终会有5个50行的文件，这时会将这5个50行的文件合并成一个250行的文件。这个过程不停的创建更大的文件。这种方式有个问题就是大量的文件被创建，在最坏的情况下所有文件都要被搜索。</p>
+<p><img src="/images/compaction.jpg" alt="Levelled Compaction"></p>
+<p><strong>Levelled Compaction</strong>：而Level DB、Cassandra等NoSQL中，使用了基于层级的Compaction方案(Levelled Compaction)，而不是根据固定文件大小进行Compaction，即生成第N层时，采用第N-1层的数据进行排序合并，使得每层的数据文件都是有序的。另外，每一层可以维护指定的文件个数，同时保证不让key重叠，也就是说把key分区到不同的文件，因此在一层查找一个key，只用查找一个文件。但在第一层，由于不断有数据文件产生，只能保证文件内的数据有序。</p>
+<h2 id="读优化"><a href="#读优化" class="headerlink" title="读优化"></a>读优化</h2><p>当一个读操作请求时，系统首先检查内存数据(memtable)，如果没有找到这个key，就会逆序的一个一个检查sstable文件，直到key 被找到。因为每个sstable都是有序的，所以查找比较高效(O(logN))，但是读操作会变的越来越慢随着sstable的个数增加，因为每一个 sstable都要被检查。假如K为sstable个数， N 为sstable平均大小，查找的复杂度是O(K log N)。因此，LSM的读操作比采用本地更新的结构要慢。</p>
+<p><strong>页缓存</strong>：可以采用一些技巧提高读性能，最基本的方法是页缓存到内存中，以减少二分查找的时间。对LevelDB来说即TableCache，即将sstable按照LRU算法缓存到内存中。LevelDB和BigTable是将 block-index 保存在文件尾部，这样查找就只要一次IO操作，如果block-index在内存中。一些其它的系统则实现了更复杂的索引方法。</p>
+<p><strong>布隆过滤器</strong>：即使有每个文件的索引，随着文件个数增多，读操作仍然很慢。通过周期的合并文件，来保持文件的个数，因些读操作的性能在可接收的范围内。即便有了合并操作，读操作仍然会访问大量的文件，大部分的实现通过布隆过滤器来避免大量的读文件操作，布隆过滤器是一种高效的方法来判断一个sstable中是否包含一个特定的key。</p>
+<p><img src="/images/bloomfilter.png" alt="BloomFilter读"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>LSM通过管理一组索引文件，而不是单一的索引文件，将随机IO转换为顺序IO，从而提高了写性能，而代价是读操作需要处理大量的索引文件。</p>
+<p>LSM的原理与区块链的块数据和状态数据处理模式很相似，因此区块链很适合使用LSM实现的NoSQL数据库(如LevelDB)进行数据存储。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="%E7%9C%8B%E5%9B%BE%E8%BD%BB%E6%9D%BE%E7%90%86%E8%A7%A3%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E7%B3%BB%E5%88%97(NoSQL%E5%AD%98%E5%82%A8-LSM%E6%A0%91)">看图轻松理解数据结构与算法系列(NoSQL存储-LSM树)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/bangerlee/p/4307055.html">LSM Tree存储组织结构介绍</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.open-open.com/lib/view/open1424916275249.html">Log Structured Merge Trees(LSM) 原理</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/28/DeFi%E5%85%A5%E9%97%A8/" rel="prev" title="DeFi入门">
+      <i class="fa fa-chevron-left"></i> DeFi入门
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSM%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">LSM原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LSM-Compaction"><span class="nav-number">3.</span> <span class="nav-text">LSM Compaction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">读优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Dazhxu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/dazhxu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;dazhxu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Dazhxu</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
