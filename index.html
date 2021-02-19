@@ -160,6 +160,268 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/18/%E9%9B%AA%E5%B4%A9%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/18/%E9%9B%AA%E5%B4%A9%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">雪崩协议</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-18 15:44:53 / 修改时间：16:59:59" itemprop="dateCreated datePublished" datetime="2021-02-18T15:44:53+08:00">2021-02-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%AC%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">公链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>雪崩协议（Avalanche）是一个新型的共识协议，它继承了Non-Byzanting和Nakamoto共识算法两者的优点，具备了简单又高效的特点。</p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h3 id="BFT和PoW算法"><a href="#BFT和PoW算法" class="headerlink" title="BFT和PoW算法"></a>BFT和PoW算法</h3><p>拜占庭容错算法BFT是由两位伟大的计算机科学家Leslie Lamport和Barbara Liskov在1982年共同开发的。BFT算法的优点是可以快速达成共识，但其也有缺点：</p>
+<ul>
+<li>扩展性差：无法扩展到1000个节点以上，因为它们通信成本正比于节点个数的二次方，即O(n^2)</li>
+<li>要求网络中的每个人都知道所有其他参与者。</li>
+</ul>
+<p>因此BFT比较适合在联盟链场景下使用，而对于缺乏信任的公有链场景，BFT算法则不适用。</p>
+<p>最早在公链场景下使用的共识算法是PoW算法，它具备不需要知道网络中参与者和可扩展性强的特点，相对的它也缺点也很明显：</p>
+<ul>
+<li>交易确认比较慢。平均而言，用户必须等待大约<strong>10–60分钟</strong>才能确认他们的交易被存储在链上。</li>
+<li>吞吐量较低。比特币每秒可处理的交易大约是3-7笔。</li>
+<li>能耗较高。PoW的运算消耗了大量电力。</li>
+</ul>
+<h3 id="共识协议族-Consensus-Family"><a href="#共识协议族-Consensus-Family" class="headerlink" title="共识协议族 Consensus Family"></a>共识协议族 Consensus Family</h3><p>Emin教授在深入研究前述两种主流共识机制后，受 Gossip 协议的启发，提出了一组BFT协议（简称“<strong>共识家族”，Consensus family</strong>）。共识协议族有四种协议组成：</p>
+<ul>
+<li><strong>Slush 协议：</strong>是共识协议族的第一个协议，它是一个非拜占庭协议（Non-byzanting protocol，后续三个协议都是 BFT 协议）。Slush协议的特点是：简单状态（simple state），小样本（small sample），反复抽样（repeated sampling），抽样轮数或时间期限（用 m 表示），Slush 协议作为 BFT 协议的原始状态，不能提供完整的 BFT 保证。</li>
+<li><strong>Snowflake 协议：</strong>也叫 “BFT Snowflake”，它是共识协议族的第二个协议，在 Slush 的基础上扩展而来。Snowflake 为每个节点增加一个 counter， 用来记录一个节点当前 color 的可信度。Snowflake 可以保证对最小的状态做出很强的保证。</li>
+<li><strong>Snowball 协议：</strong>Snowball 是共识协议族中的第三个协议，它对 Snowflake 协议做了改进，添加一个更持久的可信度标志，使得协议安全性更高，进一步增加了共识结果的可靠性（confidence）。Snowball 不仅比 Snowflake 更难攻击，而且协议更加通用化了。</li>
+<li><strong>Avalanche 协议（DAG）：</strong>Avalanche 是共识协议族中的第四个协议，也是最核心协议，它在 Snowball 的基础上添加一个动态的仅限追加（append-only）DAG 结构来记录所有的交易。DAG 结构给雪崩协议Avalanche带来了两大优势：高效，安全。</li>
+</ul>
+<h3 id="亚稳态模型-Metastable-Mechenism"><a href="#亚稳态模型-Metastable-Mechenism" class="headerlink" title="亚稳态模型 Metastable Mechenism"></a>亚稳态模型 Metastable Mechenism</h3><p>共识协议族中的协议全部基于亚稳态模型，共识协议中最糟糕的事情是无法在两个选择之间做出决定，即你不希望它模糊地说两个事件中有一个发生了，实际你期望它能确定两个事件中到底哪个发生了哪个没发生。</p>
+<p>雪崩协议的核心思想依赖于随机抽样。该协议旨在于倾向某一结果而不是留在模棱两可的中间选项。随着它的倾向性越来越高，网络的感知的颜色将会转移到其中一种颜色。我们向一个结果方向移动的速度（节点对一种颜色投票比另一种颜色更多）将会不断加快，并且在某个时候我们达到不返回点，整个网络已就颜色达成一致。</p>
+<h2 id="雪崩协议特点"><a href="#雪崩协议特点" class="headerlink" title="雪崩协议特点"></a>雪崩协议特点</h2><p>雪崩协议继承了Non-Byzanting和PoW协议两者的优点：</p>
+<ul>
+<li>快速结算和低延迟：在全球范围内实现结算需要大约2-4秒钟</li>
+<li>更高的吞吐量：每秒可处理1000–10,000个交易。</li>
+<li>稳健：网络无需就参与者是谁达成一致。</li>
+<li>静态协议：最重要的是，协议是绿色的。这意味着它是可持续的，它不会浪费任何能量，并且没有特殊的矿工生态系统，其中矿工的利益与用户的利益无关。</li>
+</ul>
+<p>另外，雪崩协议还有以下特点：</p>
+<ul>
+<li>高效的可扩展性：协议是轻量级的，因此提供可扩展性和低延迟。</li>
+<li>拜占攻击庭容忍度：它可以容忍大量的拜占庭参与者，而不对安全性产生影响。特别地，它可以容忍多达50％的节点作为拜占庭节点（即尝试欺骗网络并保持整个网络不平衡的节点）。但是，它们无法让两个节点决定两种不同颜色</li>
+<li>平等主义生态系统：雪崩协议产生了一个平等主义的生态系统，即网络中的所有节点都是相同的。 没有矿工，也没有特权。</li>
+<li>冲突交易不受保护：如果攻击者试图在两次不同的交易中花费相同的钱两次（双重支出），那么雪崩协议将无法在这两种交易之间做出选择，导致这笔钱丢失。经典共识和中本聪协议将会选择其中一个交易，但是雪崩协议不会。这是雪崩协议的一个非常有趣的属性，它会隐式而又自然地惩罚坏的角色，而协议本身没有增加任何额外的复杂读。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/08/Avalanche%E2%80%94%E2%80%94%E4%B8%80%E7%A7%8D%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E5%85%B1%E8%AF%86%E7%9A%84%E5%8F%AF%E4%BA%92%E6%93%8D%E4%BD%9C%E7%9A%84%E5%85%AC%E9%93%BE%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/08/Avalanche%E2%80%94%E2%80%94%E4%B8%80%E7%A7%8D%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E5%85%B1%E8%AF%86%E7%9A%84%E5%8F%AF%E4%BA%92%E6%93%8D%E4%BD%9C%E7%9A%84%E5%85%AC%E9%93%BE%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">Avalanche——一种基于雪崩共识的可互操作的公链协议</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-08 09:18:53 / 修改时间：13:50:56" itemprop="dateCreated datePublished" datetime="2021-02-08T09:18:53+08:00">2021-02-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">每日一链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a target="_blank" rel="noopener" href="https://www.avalabs.org/">Avalanche</a>是一个开源的平台，旨在为部署去中心化应用和企业级区块链提供可互操作、高扩展型的生态系统。Avalanche可以达到4500+的TPS以及交易即时确认。另外，以太坊的开发者可以快速的在Avalance创建应用，因为Solidity合约开箱即用。与其他分布式网络的区别是，Avalance采用了一种新颖的共识协议，来实现强安全性、快速确认和高吞吐率，同时也不会损失去中心化特性。</p>
+<h2 id="基本信息"><a href="#基本信息" class="headerlink" title="基本信息"></a>基本信息</h2><ul>
+<li>代币名称：<strong>AVAX</strong></li>
+<li>Github地址：<a target="_blank" rel="noopener" href="https://github.com/ava-labs">ava-labs</a></li>
+<li>文档：<a target="_blank" rel="noopener" href="https://docs.avax.network/">Document</a></li>
+<li>白皮书：<a target="_blank" rel="noopener" href="https://www.avalabs.org/whitepapers">Whitepaper</a></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/07/Tornado-Cash%E2%80%94%E2%80%94%E4%BB%A5%E5%A4%AA%E5%9D%8A%E9%9A%90%E7%A7%81%E4%BA%A4%E6%98%93%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Dazhxu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Dazhxu's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/07/Tornado-Cash%E2%80%94%E2%80%94%E4%BB%A5%E5%A4%AA%E5%9D%8A%E9%9A%90%E7%A7%81%E4%BA%A4%E6%98%93%E5%8D%8F%E8%AE%AE/" class="post-title-link" itemprop="url">Tornado.Cash——以太坊隐私交易协议</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-02-07 16:24:01 / 修改时间：17:33:30" itemprop="dateCreated datePublished" datetime="2021-02-07T16:24:01+08:00">2021-02-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%AF%8F%E6%97%A5%E4%B8%80%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">每日一链</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a target="_blank" rel="noopener" href="https://tornado.cash/">Tornado.Cash</a>是一个基于zkSNARKs的以太坊的隐私交易协议，通过切断交易的源地址和目的地址的关联来实现交易的隐私。Tornado使用智能合约接受E TH存款，而存款可以有另一个地址进行取款，甚至可以是一个取到一个无以太坊balance的地址。无论ETH是否是取回到新的地址，都无法关联源地址和目的地址，从而实现了隐私。</p>
+<h2 id="基本信息"><a href="#基本信息" class="headerlink" title="基本信息"></a>基本信息</h2><ul>
+<li>代币名称：<strong>TORN</strong></li>
+<li>Github地址：**<a target="_blank" rel="noopener" href="https://github.com/tornadocash">tornadocash</a>**</li>
+<li>白皮书地址：**<a target="_blank" rel="noopener" href="https://tornado.cash/audits/TornadoCash_whitepaper_v1.4.pdf">TornadoCash_whitepaper_v1.4.pdf</a>**</li>
+</ul>
+<h2 id="Tornado-Cash基本流程"><a href="#Tornado-Cash基本流程" class="headerlink" title="Tornado.Cash基本流程"></a>Tornado.Cash基本流程</h2><p>Tornado.Cash的基本流程大概分为三步：Deposit、Wait、Withdraw</p>
+<ol>
+<li><p>Deposit</p>
+<p>用户生成一个secret，并把其Hash（也称为commitment）以及交易的数量发送给Tornado智能合约。</p>
+</li>
+<li><p>Wait</p>
+<p>用户提交Deposit之后需要等待Tornado合约进行处理，即Tornado合约接受deposit请求，并把commitment添加到列表。</p>
+</li>
+<li><p>Withdraw</p>
+<p>当用户需要取款时，需要提供Proof来证明他拥有secret，关联到合约deposit列表中的某个未花费的commitment。而零知识证明协议zkSNARKs保证了这个过程并不会泄漏secret关联了哪个deposit。Tornado智能合约会校验proof，并转移deposit的资金到取款地址。这样外部的观察者并不会知道这笔存款来自哪个地址。</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/01/LSM%E4%BB%8B%E7%BB%8D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1005,20 +1267,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
